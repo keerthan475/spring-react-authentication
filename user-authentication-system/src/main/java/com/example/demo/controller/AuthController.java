@@ -7,6 +7,7 @@ import com.example.demo.service.UserService;
 import java.util.Map;
 //import java.util.HashMap;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,10 +23,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        userService.registerUser(user);
-        return "User registered successfully";
+    public ResponseEntity<?> register(@RequestBody User user) {
+        try {
+            userService.registerUser(user);
+            return ResponseEntity.ok("User registered successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 
     @GetMapping("/test")
     public String test() {
@@ -39,32 +45,44 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password/show")
-    public String showPassword(@RequestBody User user) {
-
-        return userService.validateAnswersAndGetPassword(
-                user.getUserId(),
-                user.getAnswer1(),
-                user.getAnswer2()
-        );
+    public ResponseEntity<?> showPassword(@RequestBody User user) {
+        try {
+            return ResponseEntity.ok(
+                    userService.validateAnswersAndGetPassword(
+                            user.getUserId(),
+                            user.getAnswer1(),
+                            user.getAnswer2()
+                    )
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/forgot-password/questions/{userId}")
-    public Map<String, String> getSecurityQuestions(@PathVariable String userId) {
-        return userService.getSecurityQuestions(userId);
+    public ResponseEntity<?> getSecurityQuestions(@PathVariable String userId) {
+        try {
+            return ResponseEntity.ok(userService.getSecurityQuestions(userId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Invalid User ID");
+        }
     }
 
     @PostMapping("/change-password")
-    public String changePassword(@RequestBody ChangePasswordRequest req) {
-
-        userService.changePassword(
-                req.getUserId(),
-                req.getOldPassword(),
-                req.getNewPassword(),
-                req.getConfirmPassword()
-        );
-
-        return "Password changed successfully";
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest req) {
+        try {
+            userService.changePassword(
+                    req.getUserId(),
+                    req.getOldPassword(),
+                    req.getNewPassword(),
+                    req.getConfirmPassword()
+            );
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 
 
 }

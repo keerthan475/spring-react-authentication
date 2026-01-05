@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import "../styles/auth.css";
 
 function Welcome() {
   const location = useLocation();
@@ -16,7 +17,8 @@ function Welcome() {
   }
 
   return (
-    <div>
+    <div className="auth-page">
+      <div className="auth-card">
       <h2>Welcome {userId} 👋</h2>
 
       <p>You have successfully logged in.</p>
@@ -24,6 +26,7 @@ function Welcome() {
       <br />
 
       <button onClick={handleLogout}>Logout</button>
+      </div>
     </div>
   );
 }

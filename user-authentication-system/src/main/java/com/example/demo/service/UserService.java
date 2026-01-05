@@ -27,6 +27,7 @@ public class UserService {
         if (userRepository.existsByUserId(user.getUserId())) {
             throw new RuntimeException("User ID already exists");
         }
+        validatePassword(user.getPassword());
 
         // 2. Set password changed date
         user.setPasswordChangedDate(LocalDate.now());
@@ -86,7 +87,7 @@ public class UserService {
         if (oldPassword.equals(newPassword)) {
             throw new RuntimeException("New password cannot be same as old password");
         }
-
+        validatePassword(newPassword);
         // 3. Confirm password match
         if (!newPassword.equals(confirmPassword)) {
             throw new RuntimeException("New password and confirm password do not match");
@@ -110,6 +111,20 @@ public class UserService {
 
         return questions;
     }
+
+    private void validatePassword(String password) {
+        if (password.length() < 8 ||
+            !password.matches(".*[A-Za-z].*") ||
+            !password.matches(".*[0-9].*") ||
+            !password.matches(".*[!@#$%^&*(),.?\":{}|<>].*") ||
+            password.contains(" ")) {
+
+            throw new RuntimeException(
+                "Password must be at least 8 characters and include letters, numbers, and special characters"
+            );
+        }
+    }
+
 
 
 }
